@@ -9,5 +9,6 @@ export default colors =  {
     lightGrey:'#C8CAC8',
     green:'#17A814',
     lightGold:'#FEAB43',
-    tan:'#181A18'
+    tan:'#181A18',
+    lightSalmon:'#FE9E94'
 }
