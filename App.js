@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Dimensions, Modal, Image, ScrollView , TouchableWithoutFeedback, Animated, Easing} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Dimensions, Modal, Image, ScrollView , TouchableWithoutFeedback, Animated, Easing, TouchableHighlight, FlatList} from 'react-native';
 import colors from './colors';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import ModalWrapper from 'react-native-modal-wrapper';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import {Swipeable} from 'react-native-gesture-handler';
+
+var today = new Date();
+var hourJustNow = today.getHours();
 
 
 const screenHeight = Dimensions.get('window').height;
@@ -14,90 +17,264 @@ const imgStyles = {
   height:40, width:40, marginTop:5,
 }
 
-const DATA = {
-  A : {
-    title:'Buy Groceries',
-    startTime:11,
-    endTime:12,
-    description:'Goto Supermarket and buy food',
-    list:'',
-    isCompleted:false,
-    category:'Shopping',
-    bookmarked:false,
-  },
-  B : {
-    title:'Complete homework',
-    startTime:1,
-    endTime:3,
-    description:'Finish first two assignments',
-    list:'',
-    isCompleted:false,
-    category:'Study',
-    bookmarked:false,
-  },
-  C : {
-    title:'Complete Health Checkup',
-    startTime:1,
-    endTime:3,
-    description:'Get health certificate from Dr. Sharma',
-    list:'',
-    isCompleted:false,
-    category:'Health',
-    bookmarked:false,
-  },
-  D : {
-    title:'Football',
-    startTime:1,
-    endTime:3,
-    description:'Play at New Sports Complex',
-    list:'',
-    isCompleted:false,
-    category:'Sport',
-    bookmarked:false,
-  },
-  E : {
-    title:'Complete App UI',
-    startTime:1,
-    endTime:3,
-    description:'Finish landing page and login screen',
-    list:'',
-    isCompleted:false,
-    category:'Personal',
-    bookmarked:false,
-  },
-  F : {
-    title:'Send mail to Karen',
-    startTime:1,
-    endTime:3,
-    description:'Mail the final product presentation to Karen Walters',
-    list:'',
-    isCompleted:false,
-    category:'Work',
-    bookmarked:false,
+const imgStylesTodo = {
+  height:30, width:30,
+}
+
+const DATA = [
+  {
+   title:'Buy Groceries',
+   startTime:20,
+   endTime:23,
+   description:'Goto Supermarket and buy food',
+   list:'',
+   isCompleted:false,
+   category:'shopping',
+   bookmarked:false,
+ },
+ {
+   title:'Complete homework',
+   startTime:11,
+   endTime:13,
+   description:'Finish first two assignments',
+   list:'',
+   isCompleted:false,
+   category:'work',
+   bookmarked:false,
+ },
+  {
+   title:'Complete Health Checkup',
+   startTime:20,
+   endTime:21,
+   description:'Get health certificate from Dr. Sharma',
+   list:'',
+   isCompleted:false,
+   category:'health',
+   bookmarked:false,
+ },
+  {
+   title:'Football',
+   startTime:6,
+   endTime:7,
+   description:'Play at New Sports Complex',
+   list:'',
+   isCompleted:false,
+   category:'sport',
+   bookmarked:false,
+ },
+  {
+   title:'Complete App UI',
+   startTime:22,
+   endTime:23,
+   description:'Finish landing page and login screen',
+   list:'',
+   isCompleted:false,
+   category:'personal',
+   bookmarked:false,
+ },
+ {
+   title:'Send mail to Karen',
+   startTime:12,
+   endTime:13,
+   description:'Mail the final product presentation to Karen Walters',
+   list:'',
+   isCompleted:false,
+   category:'work',
+   bookmarked:false,
+ }
+]
+
+
+
+class TodoCard extends React.Component {
+
+  
+
+  state = {
+    whichIcon: this.props.isCompleted ? 'complete' : this.props.endTime < hourJustNow ?  'late' : 'notComplete'  ,
+  } 
+
+
+  rightActions = (dragX) => {
+
+    const scale = dragX.interpolate({
+      inputRange:[-100,0],
+      outputRange:[1,0.9],
+      extrapolate:'clamp',
+    }); 
+
+    return(
+      <View style={{width: screenWidth*0.25 , height:'100%',alignItems:'center', justifyContent:'space-around', flexDirection:'row', paddingRight:10, paddingLeft:5}}>
+        <TouchableOpacity>
+          <Animated.View>
+            <Feather name='edit' color={colors.green} size={24}/>
+          </Animated.View>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <Animated.View>
+            <Feather name='trash-2' color={colors.salmon} size={24}/>
+          </Animated.View>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  renderAppropriateColor(prop){
+    switch(prop){
+      case 'personal' : return colors.orangegradient ; 
+      case 'shopping' : return colors.violetgradient;
+      case 'health' : return colors.salmongradient ; 
+      case 'sport' : return colors.greengradient;
+      case 'work' : return colors.cyangradient ; 
+      case 'recreation' : return colors.yellowgradient;
+      default : return colors.lightGrey;
+    }
+  }
+
+  renderAppropriatePic(prop){
+    
+    switch (prop) {
+      case 'sport':
+        return <Image source={require('./assets/images/exercise.png')} style={imgStylesTodo} /> ;
+
+      case 'personal' :  
+        return <Image source={require('./assets/images/personal.png')} style={imgStylesTodo}/> ;
+        
+      case 'recreation' :  
+      return <Image source={require('./assets/images/recreation.png')} style={imgStylesTodo}/> ;  
+      
+      case 'work' :  
+      return <Image source={require('./assets/images/work.png')} style={imgStylesTodo}/> ; 
+
+      case 'health' :  
+      return <Image source={require('./assets/images/health.png')} style={imgStylesTodo}/> ; 
+
+      case 'shopping':
+        return <Image source={require('./assets/images/shopping.png')} style={imgStylesTodo} /> ;
+    
+      default:
+        break;
+    }
+  
+  
+}
+
+setComplete(){
+    this.setState({whichIcon : 'complete'})
+}
+
+renderAppropriateIcon(prop){
+  switch(prop){
+    case 'notComplete' : 
+    <TouchableOpacity style={{paddingVertical:3}} onPress={()=>this.setComplete()}>
+        <Feather name='circle' size={24} color={colors.lightGrey}/>
+    </TouchableOpacity> 
+    case 'late' : 
+    <TouchableOpacity style={{paddingVertical:3}} onPress={()=>this.setComplete()}>
+        <Feather name='clock' size={24} color={colors.salmon}/>
+    </TouchableOpacity> 
+    case 'complete' : 
+    <TouchableOpacity style={{paddingVertical:3}}>
+        <Image source={require('./assets/images/check.png')} style={{height:24, width:24}} />
+    </TouchableOpacity> 
+    default : 
+    <TouchableOpacity style={{paddingVertical:3}} onPress={()=>this.setComplete()}> <Feather name='circle' size={24} color={colors.lightGrey}/></TouchableOpacity> ;
   }
 }
 
-class TodoCard extends React.Component {
   render(){
-    return(
-      <View style={{height: screenHeight * 0.2, width: screenWidth - 30, marginHorizontal:5, backgroundColor: colors.violet, marginVertical:7, flexDirection:'row'}}>
-        <View style={{flex:2, backgroundColor:colors.darkBlue, alignItems:'center', justifyContent:'center'}}>
 
-        </View>
+    
+    const actualStartTime = this.props.startTime > 12 ? this.props.startTime-12 : this.props.startTime;
+    const actualEndTime = this.props.endTime > 12 ? this.props.endTime-12 : this.props.endTime;
+    
+    
 
-        <View style={{flex:9, backgroundColor:colors.violet, alignItems:'center', justifyContent:'center'}}> 
+    return( 
+      
+        
+          <Swipeable renderRightActions = {(_,dragX) => this.rightActions(dragX)} overshootRight={false} friction={1.5} >
 
-          <View style={{width:'100%', height:'90%', backgroundColor:colors.darkGrey, borderRadius:20}}>
+            <View style={{ width:screenWidth - 40, marginHorizontal:10, height:'auto', flexDirection:'row', marginBottom:10}}>
+              
+              
+              <View style={{flex:1.2 , backgroundColor:colors.background, justifyContent:'center', alignItems:'flex-start'}}>
 
-            <View style={{width:'100%', height:20,alignItems:'flex-start', paddingHorizontal:15, paddingVertical:5 }}>
-                <Text style={{fontFamily:'RubikRegular', color: colors.lightGrey, fontSize:14, textAlign:'center'}}>{this.props.startTime} to {this.props.endTime}</Text>
+                { this.state.whichIcon === 'notComplete' ? 
+                <TouchableOpacity style={{paddingVertical:3}} onPress={()=>this.setComplete()}>
+                <Feather name='circle' size={24} color={colors.lightGrey}/>
+                </TouchableOpacity> 
+                
+                :
+                this.state.whichIcon === 'complete' ? 
+                
+                <TouchableOpacity style={{paddingVertical:3}}>
+                   <Image source={require('./assets/images/check.png')} style={{height:24, width:24}} />
+                </TouchableOpacity> 
+
+                : this.state.whichIcon === 'late' ? 
+
+                <TouchableOpacity style={{paddingVertical:3}} onPress={()=>this.setComplete()}>
+                  <Feather name='clock' size={24} color={colors.salmon}/>
+                </TouchableOpacity>
+                
+                : 
+
+                <TouchableOpacity style={{paddingVertical:3}} onPress={()=>this.setComplete()}>
+                <Feather name='circle' size={24} color={colors.lightGrey}/>
+                </TouchableOpacity> 
+
+                
+                
+                }
+
+
+              </View>
+
+              <TouchableOpacity>
+              <View style={{flex:9, borderRadius:30, paddingVertical:10, borderWidth:0, backgroundColor: this.renderAppropriateColor(this.props.category), }}>
+
+                <View style={{width:screenWidth * 0.7, height:20,alignItems:'flex-start', marginHorizontal:15, marginBottom:5, marginTop:5 }}>
+                    <Text style={{fontFamily:'RubikRegular', color: colors.grey, fontSize:14, textAlign:'center'}}>{actualStartTime} to {actualEndTime}</Text>
+                </View>
+
+                <View style={{width:screenWidth * 0.7, height:'auto',alignItems:'flex-start', marginHorizontal:15, marginBottom:5, marginTop:0 }}>
+                    <Text style={{fontFamily:'RubikMedium', color: colors.tan, fontSize:20, textAlign:'center'}}>{this.props.title}</Text>
+                </View>
+
+                <View style={{width:screenWidth * 0.7, height:'auto',alignItems:'flex-start', marginHorizontal:15, marginBottom:5, marginTop:5 }}>
+                    <Text style={{fontFamily:'RubikRegular', color: colors.grey, fontSize:12,textAlignVertical:'center',}}>{this.props.description}</Text>
+                </View>
+
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingHorizontal:15,paddingRight:25}}>
+                  
+                  <View style={{width:'auto', height:'auto', borderRadius:20, backgroundColor:this.renderAppropriateColor(this.props.category), }}>
+                    <Text style={{fontFamily:'RubikMedium', fontSize:12, color: colors.white, marginHorizontal:7, marginVertical:4}}>{this.props.category}</Text>
+
+                  </View>
+
+                  <View style={{height:50, width:50, borderRadius:25, backgroundColor: this.renderAppropriateColor(this.props.category), alignItems:'center', justifyContent:'center'}}>
+                      {this.renderAppropriatePic(this.props.category)}
+                  </View>
+
+                </View>
+
+            
+
+              </View>
+              </TouchableOpacity>
+              
             </View>
+           
 
-          </View>
+              
+          </Swipeable>
+        
+        
+        
 
-        </View>
-
-      </View>
+    
     )
   }
 }
@@ -208,6 +385,16 @@ class HabitBox extends React.Component {
     }
 }
 
+class EmptyList extends React.Component {
+  render(){
+    return(
+      <View style={{height:200, width: screenWidth - 40, alignItems:'center', justifyContent:'center'}}>
+
+      </View>
+    )
+  }
+}
+
 
 
 export default class App extends React.Component {
@@ -237,6 +424,8 @@ export default class App extends React.Component {
     this.setState({settingsModalVisible:false})
   } 
 
+  
+
 
   animation = new Animated.Value(0)
 
@@ -253,6 +442,8 @@ export default class App extends React.Component {
       this.open = !this.open
       this.setState({textVisible: !this.state.textVisible})
   }
+
+  renderItem =(item) => <TodoCard startTime={item.startTime} endTime={item.endTime} title={item.title} description={item.description} list={item.list} isCompleted={item.isCompleted} category={item.category} bookmarked={item.bookmarked}/> 
 
 
 
@@ -515,21 +706,26 @@ export default class App extends React.Component {
 
             </View>
 
-            <TodoCard startTime={11} endTime={12} title="Buy Groceries" description='Go to supermarket and buy grocery for one month' list='' isCompleted={false} category='Shopping' bookmarked={false} />
-            <TodoCard/>
-            <TodoCard/>
-            <TodoCard/>
+
+            <FlatList
+            
+            data={DATA}
+            renderItem={({item})=><TodoCard startTime={item.startTime} endTime={item.endTime} title={item.title} description={item.description} list={item.list} isCompleted={item.isCompleted} category={item.category} bookmarked={item.bookmarked}  />}
+            ListEmptyComponent= {<EmptyList/>}
+            
+          /> 
+
+
           </View>
 
 
 
-          <View style={{height:500, width: screenWidth - 30}}>
-
-          </View>
+          
 
 
           </ScrollView>
 
+          
 
 
 
@@ -775,5 +971,15 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginTop:5,
     
-  }
+  },
+  
 });
+
+
+{/* <TodoCard startTime={11} endTime={12} title="Buy Groceries" description='Go to supermarket and buy grocery for one month' list='' isCompleted={false} category='shopping' bookmarked={false} />
+            <TodoCard startTime={7} endTime={8} title="Go to Gym" description='Run for 30 mins + 15 minutes squats' list='' isCompleted={false} category='sport' bookmarked={false}/>
+            <TodoCard startTime={3} endTime={5} title="Prepare Presentation" description='Complete last 3 slides and mail final model to boss' list='' isCompleted={false} category='work' bookmarked={false}/>
+            <TodoCard startTime={11} endTime={12} title="Call Linda" description='Catch up with her family' list='' isCompleted={false} category='personal' bookmarked={false}/>
+            <TodoCard startTime={6} endTime={7} title="Complete Painting" description='Finish the last part of painting' list='' isCompleted={false} category='recreation' bookmarked={false}/>
+            <TodoCard startTime={5} endTime={6} title="Medical Checkup" description='Visit hospital and get medical checkup certificate from Dr. Roy' list='' isCompleted={false} category='health' bookmarked={false}/>
+           */}

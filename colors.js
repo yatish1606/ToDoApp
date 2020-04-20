@@ -10,5 +10,13 @@ export default colors =  {
     green:'#17A814',
     lightGold:'#FEAB43',
     tan:'#181A18',
-    lightSalmon:'#FE9E94'
+    lightSalmon:'#FE9E94',
+    violetgradient:'#4642FE1a',
+    grey:'#ACABAB',
+    orangegradient:'#EA64131a',
+    salmongradient:'#D51F171a',
+    bluegradient:'#426EFE1a',
+    yellowgradient:'#E4BE161a',
+    greengradient:'#17A8141a',
+    cyangradient:'#0DA38E1a'
 }
