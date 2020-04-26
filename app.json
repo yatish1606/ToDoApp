@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "HelloWorld",
+    "name": "ToDoApp",
     "slug": "ToDoApp",
     "platforms": [
       "ios",

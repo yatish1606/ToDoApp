@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Dimensions, Modal, Image, ScrollView , TouchableWithoutFeedback, Animated, Easing, TouchableHighlight, FlatList} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Dimensions, Modal, Image, ScrollView , TouchableWithoutFeedback, Animated, Easing, TouchableHighlight, FlatList, ActivityIndicator, ImageBackground} from 'react-native';
 import colors from './colors';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import ModalWrapper from 'react-native-modal-wrapper';
-import {Swipeable} from 'react-native-gesture-handler';
+import {Swipeable, TextInput} from 'react-native-gesture-handler';
+import SwipeTimePicker from 'react-native-swipetimepicker';
 
 var today = new Date();
 var hourJustNow = today.getHours();
@@ -260,6 +261,12 @@ renderAppropriateIcon(prop){
 
                 </View>
 
+                {this.state.whichIcon === 'late' ? 
+                <View style={{width: screenWidth*0.7, height:'auto', alignItems:'center', flexDirection:'row', marginVertical:5, marginHorizontal:15}}>
+                  <Text style={{flex:1, fontFamily:'RubikRegular', fontSize:12, color:colors.salmon, marginVertical:4,}}>Oops! Looks like you forgot to {this.props.title} ! </Text>
+
+                </View> : <View></View>}
+
             
 
               </View>
@@ -403,6 +410,9 @@ export default class App extends React.Component {
     fontLoaded:false,
     settingsModalVisible:false,
     textVisible:true,
+    newTodoModalVisible:false,
+    pressValue : new Animated.Value(60),
+    borderBottomColor:'#BABED5'
   }
 
   async componentDidMount() {
@@ -422,6 +432,14 @@ export default class App extends React.Component {
 
   closeSettings(){
     this.setState({settingsModalVisible:false})
+  } 
+
+  newTodoOpenModal(){
+    this.setState({newTodoModalVisible:true})
+  } 
+
+  NewTodoCloseModal(){
+    this.setState({newTodoModalVisible:false})
   } 
 
   
@@ -445,7 +463,19 @@ export default class App extends React.Component {
 
   renderItem =(item) => <TodoCard startTime={item.startTime} endTime={item.endTime} title={item.title} description={item.description} list={item.list} isCompleted={item.isCompleted} category={item.category} bookmarked={item.bookmarked}/> 
 
+  handlePressIn = () => {
+    Animated.timing(this.state.pressValue, {
+        duration: 50,
+        toValue: 56
+    }).start(console.log('pressin'));
+}
 
+  handlePressOut = () => {
+      Animated.timing(this.state.pressValue, {
+          duration: 50,
+          toValue: 60
+      }).start(console.log('pressout'));
+  }
 
 
   render() {
@@ -504,12 +534,21 @@ export default class App extends React.Component {
           inputRange:[0,1],
           outputRange:['0deg','45deg']
         })
-      }]
+      }],
+    }
+
+    const animateStyle= {
+      width: this.state.pressValue,
+      height: this.state.pressValue
     }
 
     if(!this.state.fontLoaded){
       return(
-        <View>
+        <View style={{alignContent:'center'}}>
+          <ActivityIndicator 
+            size='large'
+            color={colors.lightGrey}
+          />
         </View>
       )
     }
@@ -599,15 +638,15 @@ export default class App extends React.Component {
                 </Animated.View>
               </TouchableWithoutFeedback>
 
-              <TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={()=>{this.newTodoOpenModal()}}>
                 <Animated.View style={[styles.FABOptions, TodoStyle]}>
                   <Image source={require('./assets/images/todoicon.png')} style={{height:25, width:25,}}/>
                 </Animated.View>
               </TouchableWithoutFeedback>
 
 
-              <TouchableWithoutFeedback onPress={this.toggleFAB}>
-                <Animated.View style={[styles.FABStyle, rotation]}>
+              <TouchableWithoutFeedback onPress={this.toggleFAB} onPressIn={this.handlePressIn} onPressOut={this.handlePressOut}>
+                <Animated.View style={[styles.FABStyle, rotation, animateStyle]}>
                   <Feather name='plus' size={30} color={colors.white}/>
                 </Animated.View>
               </TouchableWithoutFeedback>
@@ -842,6 +881,44 @@ export default class App extends React.Component {
            
 
           </ModalWrapper>
+
+
+          {/*Modal COmponent for Add New Todo*/}
+
+
+          <Modal visible={this.state.newTodoModalVisible} onRequestClose={()=>this.NewTodoCloseModal()} animationType='slide'>
+            
+            <ImageBackground source={require('./assets/images/newtaskbg.png')} style={{flex:1}} resizeMode='cover'>
+
+              <ScrollView>
+                <TouchableOpacity style={{position:'absolute', height:50, width:50, borderRadius:25, top:20, left:15, alignItems:'center', justifyContent:'center'}} onPress={()=>this.NewTodoCloseModal()}>
+                      <Feather name='arrow-left' size={40} color='#f6f6f6'/>
+                  </TouchableOpacity>
+
+                  <Text style={{marginTop:screenHeight * 0.13, fontFamily:'RubikMedium', fontSize:25, marginLeft:20, color:colors.tan, maxWidth:screenWidth*0.35}} >Create New ToDo</Text>
+
+                  <Text style={{marginTop:20, fontFamily:'RubikRegular', fontSize:17, marginLeft:20, color:colors.tan}}>Title</Text>
+                  <View style={{flexDirection:'row', width:screenWidth, alignItems:'center', justifyContent:'space-between',marginTop:5, paddingHorizontal:20}}>
+                      <TextInput style={{height:35, width:'100%', borderBottomWidth:1, borderBottomColor:this.state.borderBottomColor, fontSize:20, fontFamily:'RubikRegular', color:colors.tan }} onFocus={()=>this.setState({borderBottomColor:'#3C4FCC'})} onBlur={()=>this.setState({borderBottomColor:'#BABED5'})} autoFocus/>
+                  </View>
+
+                  <View style={{width:'100%', height:300, borderTopLeftRadius:40, borderTopRightRadius:40, backgroundColor:'#fff', marginTop:20,}}>
+                    
+                    <Text style={{marginTop:20, fontFamily:'RubikRegular', fontSize:17, marginLeft:20, color:colors.tan, marginTop:15}}>Time</Text>
+                    <View style={{width:'100%', height:'auto', paddingHorizontal:20, paddingHorizontal:5, flexDirection:'row', alignItems:'center'}}>
+                    <SwipeTimePicker
+                        time={new Date()}
+                        onChange={(time) => console.log(time, time.text)}
+                    />
+                    </View>
+
+                  </View>
+              </ScrollView>
+
+              
+            </ImageBackground>
+
+          </Modal>
 
 
 

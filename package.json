@@ -16,6 +16,8 @@
     "react-native-gesture-handler": "^1.6.1",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-modal-wrapper": "^3.1.1",
+    "react-native-swipebox": "0.0.5",
+    "react-native-swipetimepicker": "0.0.9",
     "react-native-switch-selector": "^2.0.4",
     "react-native-web": "~0.11.7"
   },
