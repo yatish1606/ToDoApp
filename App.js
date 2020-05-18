@@ -5,7 +5,8 @@ import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import ModalWrapper from 'react-native-modal-wrapper';
 import {Swipeable, TextInput} from 'react-native-gesture-handler';
-import SwipeTimePicker from 'react-native-swipetimepicker';
+import DatePicker from 'react-native-modern-datepicker';
+import TimePicker from 'react-native-simple-time-picker';
 
 var today = new Date();
 var hourJustNow = today.getHours();
@@ -705,18 +706,24 @@ export default class App extends React.Component {
 
             </View>
 
-              <ScrollView contentContainerStyle={{ marginLeft:5,paddingLeft:5, backgroundColor:colors.background, alignItems:'center',paddingRight:10, marginRight:20}} style={{width:screenWidth - 30,height: screenHeight * 0.15,}} horizontal={true} scrollEnabled={true} showsHorizontalScrollIndicator={false} >
+              {/* <ScrollView contentContainerStyle={{ marginLeft:5,paddingLeft:5, backgroundColor:colors.background, alignItems:'center',paddingRight:10, marginRight:20}} style={{width:screenWidth - 30,height: screenHeight * 0.15,}} horizontal={true} scrollEnabled={true} showsHorizontalScrollIndicator={false} > */}
 
+              <View style={{flexDirection:'row', alignItems:'center', height:'50%', width:'100%', justifyContent:'center'}}>
 
+              
               <TouchableOpacity style={styles.optionsBox}>
                   <Image source={require('./assets/images/projects.png')} style={{height:40, width:40, marginLeft:5}}/>
                   <Text style={{fontFamily:'MontserratSemiBold', fontSize:15, color:colors.tan, marginHorizontal:7}}>Projects</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.optionsBox}>
+              <TouchableOpacity style={styles.optionsBox}>  
                   <Image source={require('./assets/images/notes.png')} style={{height:40, width:40, marginLeft:5}}/>
                   <Text style={{fontFamily:'MontserratSemiBold', fontSize:15, color:colors.tan, marginHorizontal:7}}>Notes</Text>
               </TouchableOpacity>
+
+              </View>
+
+              <View style={{flexDirection:'row', alignItems:'center', height:'50%', width:'100%', justifyContent:'center'}}>
 
               <TouchableOpacity style={styles.optionsBox}>
                   <Image source={require('./assets/images/lists.png')} style={{height:35, width:35, marginLeft:5}}/>
@@ -728,10 +735,15 @@ export default class App extends React.Component {
                   <Text style={{fontFamily:'MontserratSemiBold', fontSize:15, color:colors.tan, marginHorizontal:7}}>To Do</Text>
               </TouchableOpacity>
 
+              </View>
+              
+
+              
 
 
 
-              </ScrollView>
+
+              {/* </ScrollView> */}
 
           </View>
 
@@ -895,21 +907,23 @@ export default class App extends React.Component {
                       <Feather name='arrow-left' size={40} color='#f6f6f6'/>
                   </TouchableOpacity>
 
-                  <Text style={{marginTop:screenHeight * 0.13, fontFamily:'RubikMedium', fontSize:25, marginLeft:20, color:colors.tan, maxWidth:screenWidth*0.35}} >Create New ToDo</Text>
+                  <Text style={{marginTop:screenHeight * 0.13, fontFamily:'RubikMedium', fontSize:25, marginLeft:20, color:colors.tan,}} >Create</Text>
+                  <Text style={{marginTop:screenHeight * 0.13, fontFamily:'RubikMedium', fontSize:25, marginLeft:20, color:colors.tan,marginTop:5 }} >New ToDo</Text>
 
                   <Text style={{marginTop:20, fontFamily:'RubikRegular', fontSize:17, marginLeft:20, color:colors.tan}}>Title</Text>
                   <View style={{flexDirection:'row', width:screenWidth, alignItems:'center', justifyContent:'space-between',marginTop:5, paddingHorizontal:20}}>
                       <TextInput style={{height:35, width:'100%', borderBottomWidth:1, borderBottomColor:this.state.borderBottomColor, fontSize:20, fontFamily:'RubikRegular', color:colors.tan }} onFocus={()=>this.setState({borderBottomColor:'#3C4FCC'})} onBlur={()=>this.setState({borderBottomColor:'#BABED5'})} autoFocus/>
                   </View>
 
-                  <View style={{width:'100%', height:300, borderTopLeftRadius:40, borderTopRightRadius:40, backgroundColor:'#fff', marginTop:20,}}>
+                  <View style={{width:'100%', height:500, borderTopLeftRadius:40, borderTopRightRadius:40, backgroundColor:'#fff', marginTop:20,}}>
                     
                     <Text style={{marginTop:20, fontFamily:'RubikRegular', fontSize:17, marginLeft:20, color:colors.tan, marginTop:15}}>Time</Text>
                     <View style={{width:'100%', height:'auto', paddingHorizontal:20, paddingHorizontal:5, flexDirection:'row', alignItems:'center'}}>
-                    <SwipeTimePicker
-                        time={new Date()}
-                        onChange={(time) => console.log(time, time.text)}
-                    />
+                    
+                    <TimePicker
+          containerStyle={{width:screenWidth*0.5}}
+          onChange={(hours, minutes) => console.log(hours,minutes)}
+        />
                     </View>
 
                   </View>
@@ -1021,13 +1035,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white
   },
   optionsContainer:{
-    height: screenHeight * 0.18,
+    height: 160,
     width: screenWidth - 20, 
     backgroundColor:colors.background,
+    
   },
   optionsBox:{
-    height:screenHeight * 0.1,
-    width: 'auto',
+    height:60,
+    width: screenWidth/2 - 25,
     borderRadius: screenHeight * 0.03,
     elevation:2,
     alignItems:'center',
